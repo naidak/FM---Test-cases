@@ -68,7 +68,7 @@ describe("PetCity Login Tests", function () {
             "Nepoznata adresa e-pošte. Ponovno provjerite ili pokušajte svojim korisničkim imenom.",
             "Poruka o grešci nije ispravna!"
         );
-        await driver.sleep(2000);
+       // await driver.sleep(2000);
     });
 
     const waitForElementToBeClickable = async (element) => {
@@ -98,13 +98,13 @@ describe("PetCity Login Tests", function () {
         await firstProduct.click();
         const currentUrl = await driver.getCurrentUrl();
         assert.notEqual(currentUrl, "https://www.petcity.ba/kategorija-proizvoda/macke/", "Korisniku nije otvorena stranica sa detaljima proizvoda!");
-        await driver.sleep(1000);
+        // await driver.sleep(1000);
     })
 
     it("Step 3: Klikni na button 'Dodaj u košaricu'", async function () {
         const addToCartButton = await driver.findElement(By.css(".single_add_to_cart_button"));
         await addToCartButton.click();
-        await driver.sleep(1000);
+        //await driver.sleep(1000);
 
         const successMessage = await driver.findElement(By.css(".woocommerce-message"));
         const viewCartButton = await driver.findElement(By.css(".wc-forward"));
@@ -183,7 +183,7 @@ describe("PetCity Login Tests", function () {
         await  paymentAdress.click();
         const currentUrl = await driver.getCurrentUrl();
         assert.equal(currentUrl, "https://www.petcity.ba/moj-racun/edit-address/naplata/");
-        await driver.sleep(2000)
+        //await driver.sleep(2000)
     })
 
     it("Step 7: Popuni prikazanu formu \t\n", async function(){
@@ -222,7 +222,172 @@ describe("PetCity Login Tests", function () {
         //https://www.petcity.ba/moj-racun/edit-address/
         const currentUrl = await driver.getCurrentUrl();
         assert.equal(currentUrl, "https://www.petcity.ba/moj-racun/edit-address/");
-        await driver.sleep(2000)
+       // await driver.sleep(2000)
+    })
+    //Korisnik može da poništi sve filtere
+    it("Step 1: Klikni na opciju brendovi iz izbornika", async function(){
+        const brendovi = await driver.findElement(By.css('a[href="https://www.petcity.ba/brendovi/"]'));
+        await brendovi.click();
+        const current = await  driver.getCurrentUrl();
+        assert.equal(current,"https://www.petcity.ba/brendovi/", "Greška!");
+        //await driver.sleep(2000);
     })
 
+    it("Step 2: Klikni na logo bilo kojeg brenda\t\n", async function(){
+        const logoBrenda = await driver.findElement((By.css('div.thumb-box a')))
+        await logoBrenda.click();
+        const current = await  driver.getCurrentUrl();
+        assert.notEqual(current,"https://www.petcity.ba/brendovi/", "Greška!");
+    })
+    //woof_18_67801976e9bf3
+
+    it("Step 3: Označi checkbox željene kategorije proizvoda\t\n", async function(){
+        const chbx = await driver.findElement((By.css(".iCheck-helper")));
+        chbx.click();
+    })
+
+    it("Step 4: Odaberi način sortiranja", async function() {
+        const select = await driver.findElement(By.css(".orderby"));
+        await driver.executeScript("arguments[0].value = 'price-desc'; arguments[0].dispatchEvent(new Event('change'));", select);
+
+        const current = await driver.getCurrentUrl();
+        await driver.get(current + '?orderby=price-desc');
+
+        //assert.equal(current,"https://www.petcity.ba/brand/pet-secret/?orderby=price-desc", "Greška!");
+    });
+
+    it("Step 5: Klikni na button \"Reset\"\t\n", async function(){
+        const reset = await driver.findElement(By.css(".button"));
+        await reset.click();
+        const chbx = await driver.findElement((By.css(".iCheck-helper")));
+        chbx.click();
+        const current = await driver.getCurrentUrl();
+        await driver.get(current.split('?')[0] + '?orderby=relevance');
+    })
+
+    //Korisnik ne može da se prijavi za posao
+    it("Step 1: Hover na padajući izbornik \"O nama\"\t\n", async function(){
+        const menu = await driver.findElement(By.css(".sub-menu"));
+
+        const actions = driver.actions({ async: true });
+        await driver.executeScript("arguments[0].dispatchEvent(new MouseEvent('mouseover', { bubbles: true, cancelable: true }));", menu);
+
+        const element = driver.findElement(By.css("#menu-item-204 a"))
+        await element.click();
+
+        const url = await driver.findElement(By.css('a[href="https://www.petcity.ba/posao-u-petcity-u/"]'));
+        await url.click()
+        const current = await driver.getCurrentUrl();
+        assert.equal(current,"https://www.petcity.ba/posao-u-petcity-u/", "Greška!");
+    })
+
+    it("Step 2: Klikni na polje \"S naznakom za *\" i popuni ga\t\n", async function(){
+        const label = await driver.findElement(By.css('input[name="naznaka"]'));
+        await label.click();
+        await label.sendKeys("Ime Prezime");
+    })
+
+    it("Step 3: Klikni na polje \"Ime i prezime *\" i popuni ga\t\n", async function(){
+        const datePlaceOfBirth = await driver.findElement(By.css('input[name="rodjenje"]'));
+        await datePlaceOfBirth.click();
+        await datePlaceOfBirth.sendKeys("13.4.1950, Mostar");
+    })
+
+    it("Step 4: Klikni na polje \"Datum i mjesto rođenja\" i popuni ga\t\n", async function(){
+        const firstLastName = await driver.findElement(By.css('input[name="ime"]'));
+        await firstLastName.click();
+        await firstLastName.sendKeys("Naida Karabeg");
+    })
+
+    it("Step 5: Klikni na polje \"Državljanstvo(a) *\" i popuni ga\t\n", async function(){
+        const citizenship = await driver.findElement(By.css('input[name="drzavljanstvo"]'));
+        await citizenship.click();
+        await citizenship.sendKeys("BiH");
+    })
+
+    it("Step 6: Klikni na polje \"Prebivalište (stalno) *\" i popuni ga\t\n", async function(){
+        const residence = await driver.findElement(By.css('input[name="prebivaliste"]'));
+        await residence.click();
+        await residence.sendKeys("Mostar");
+    })
+
+    it("Step 7: Klikni na polje \"Telefon / mobitel *\" i popuni ga\t\n", async function(){
+        const telephone = await driver.findElement(By.css('input[name="telefon"]'));
+        await telephone.click();
+        await telephone.sendKeys("063456789");
+    })
+
+    it("Step 8: Klikni na polje \"E-mail *\" i popuni ga\t\n", async function(){
+        const email = await driver.findElement(By.css('input[name="email"]'));
+        await email.click();
+        await email.sendKeys("test@gmail.com");
+    })
+    it("Step 9: Klikni na polje \"Stručna sprema *\" i popuni ga\t\n", async function(){
+        const education = await driver.findElement(By.css('select[name="strucna-sprema"]'));
+        await education.click();
+
+        const value = await driver.findElement(By.css('option[value="VŠS"]'));
+        await value.click();
+    })
+    it("Step 10: Klikni na polje \"Strani jezici *\" i popuni ga\t\n", async function(){
+        const languages = await driver.findElement(By.css('input[name="strani-jezici"]'));
+        await languages.click();
+        await languages.sendKeys("Engleski jezik, Arapski jezik, Turski jezik");
+    })
+
+    it("Step 11: Klikni na polje \"Radno iskustvo *\" i popuni ga\t\n", async function(){
+        const workExperience = await driver.findElement(By.css('textarea[name="radno-iskustvo"]'));
+        await workExperience.clear();
+        await workExperience.click();
+        await workExperience.sendKeys("3 godine");
+    })
+
+    it("Step 12: Klikni na polje \"Kratka biografija\" i popuni ga\t\n", async function(){
+        const CV = await driver.findElement(By.css('textarea[name="kratka-biografija"]'));
+        await CV.click();
+        await CV.clear();
+        await CV.sendKeys("Ovo su testni podaci za biografiju.");
+    })
+
+    it("Step 13: Odaberi opciju \"Da\" ili \"Ne\" na radiobutton-u \"Znanje rada na PC-u\"\t\n", async function(){
+        const pc = await driver.findElement(By.css('input[name="pc"]'));
+        await pc.click();
+        await pc.click();
+    })
+
+    it("Step 14: Odaberi opciju \"Da\" ili \"Ne\" na radiobutton-u \"Vozačka dozvola\"\t\n", async function(){
+        const driversLicense = await driver.findElement(By.css('input[name="vozacka"]'));
+        await driversLicense.click();
+
+        await driver.sleep(5000);
+    })
+
+    it("Step 15: Klikni na button \"Choose file\" za labelu \"Upload datoteke - CV *\"\t\n", async function(){
+        const CVFile = await driver.findElement(By.css('input[name="file-500"]'));
+
+        const filePath = "C:/Users/HOME/Desktop/FM - Testovi/test/CV.txt";
+
+        await CVFile.sendKeys(filePath);
+    })
+
+    it("Step 16: Klikni na button \"Choose file\" za labelu \"Upload datoteke - CV *\"\t\n", async function(){
+        const photoFile = await driver.findElement(By.css('input[name="file-600"]'));
+
+        const filePath = "C:/Users/HOME/Desktop/FM - Testovi/test/slika.png";
+
+        await photoFile.sendKeys(filePath);
+    })
+
+    it("Step 17: Klikni na polje za kviz pitanje i popuni ga\t\n", async function(){
+        const quiz = await driver.findElement(By.css('input[name="random-math-quiz"]'));
+        await quiz.click();
+
+        await quiz.sendKeys('a');
+    })
+
+    it("Step 18: Klikni na button \"POŠALJITE PRIJAVU...\"\t\n", async function(){
+        const btn = await driver.findElement(By.css('input[value="POŠALJITE PRIJAVU..."]'));
+        await btn.click();
+        await driver.sleep(5000);
+    })
 });
